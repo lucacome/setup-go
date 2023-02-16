@@ -10,4 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./
+      - name: setup-go
+        id: setup-go
+        uses: ./
+      - run: |
+          echo ${{ steps.setup-go.outputs.go-env }}
+          echo ${{ fromJSON(steps.setup-go.outputs.go-env) }}

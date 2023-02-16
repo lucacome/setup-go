@@ -63618,7 +63618,8 @@ function run() {
             core.startGroup('go env');
             let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
             let goEnvJson = convertEnvStringToJson(goEnv);
-            core.info(`go env json: ${goEnvJson}`);
+            core.info(JSON.stringify(goEnvJson, null, 2));
+            core.setOutput('go-env', JSON.stringify(goEnvJson));
             core.setOutput('go-version', parseGoVersion(goVersion));
             core.info(goEnv);
             core.endGroup();
