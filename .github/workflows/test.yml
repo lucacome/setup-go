@@ -15,4 +15,5 @@ jobs:
         uses: ./
       - run: |
           echo ${{ steps.setup-go.outputs.go-env }}
-          echo ${{ fromJSON(steps.setup-go.outputs.go-env) }}
+          foo=${{ fromJSON(steps.setup-go.outputs.go-env) }}
+          echo $foo | jq .GOPATH
