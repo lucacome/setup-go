@@ -16,4 +16,4 @@ jobs:
       - run: |
           echo ${{ steps.setup-go.outputs.go-env }}
           foo=${{ steps.setup-go.outputs.go-env }}
-          jq -r GOPATH <<<$foo
+          jq -r .GOPATH <<<$foo
