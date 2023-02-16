@@ -63673,7 +63673,7 @@ function convertEnvStringToJson(envString) {
     const envObject = {};
     envArray.forEach(envVar => {
         const [key, value] = envVar.split('=');
-        envObject[key] = value.replace(/^"(.+(?="$))"$/, '$1');
+        envObject[key] = value === null || value === void 0 ? void 0 : value.replace(/^"(.+(?="$))"$/, '$1');
     });
     return envObject;
 }
