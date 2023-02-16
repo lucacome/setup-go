@@ -6,18 +6,18 @@ on:
   pull_request:
 
 jobs:
-  run-setup-go:
+  setup-go-env:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: setup-go
-        id: setup-go
         uses: ./
       - run: |
-          echo ${{ steps.setup-go.outputs.go-path }}
-          echo ${{ steps.setup-go.outputs.go-root }}
-          echo ${{ steps.setup-go.outputs.go-mod }}
-          echo ${{ steps.setup-go.outputs.go-mod-cache }}
-          echo ${{ steps.setup-go.outputs.go-env }}
-          echo ${{ steps.setup-go.outputs.cache-hit }}
-          echo ${{ steps.setup-go.outputs.go-version }}
+          echo GOPATH=${{ steps.setup-go.outputs.go-path }}
+          echo GOROOT=${{ steps.setup-go.outputs.go-root }}
+          echo GOMOD=${{ steps.setup-go.outputs.go-mod }}
+          echo GOMODCACHE=${{ steps.setup-go.outputs.go-mod-cache }}
+          echo GOVERSION=${{ steps.setup-go.outputs.go-version }}
+          echo Cache hit: ${{ steps.setup-go.outputs.cache-hit }}
+
+          echo ${{ fromJSON(steps.setup-go.outputs.go-env) }}
