@@ -132,15 +132,19 @@ describe('setup-go', () => {
     let goVersion = 'go1.18.10';
 
     let env = `
-      GOROOT="${goRoot}"
-      GOPATH="${goPath}"
-      GOMODCACHE="${goModCache}"
-      GOCACHE="${goCache}"
-      GOVERSION="${goVersion}"
+GOROOT="${goRoot}"
+GOPATH="${goPath}"
+GOMODCACHE="${goModCache}"
+GOCACHE="${goCache}"
+GOVERSION="${goVersion}"
     `;
     let json = JSON.parse(main.convertEnvStringToJson(env));
     expect(json).toBeDefined();
-    // expect(json).toBe(goRoot);
+    expect(json['GOROOT']).toBe(goRoot);
+    expect(json['GOPATH']).toBe(goPath);
+    expect(json['GOMODCACHE']).toBe(goModCache);
+    expect(json['GOCACHE']).toBe(goCache);
+    expect(json['GOVERSION']).toBe(goVersion);
   });
 
   it('can find 1.9.7 from manifest on osx', async () => {

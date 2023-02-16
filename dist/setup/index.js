@@ -63614,16 +63614,16 @@ function run() {
             // add problem matchers
             const matchersPath = path_1.default.join(__dirname, '../..', 'matchers.json');
             core.info(`##[add-matcher]${matchersPath}`);
-            // output the version actually being used
-            core.info(goVersion);
+            core.startGroup('go env');
             core.setOutput('go-version', goVersion);
             core.setOutput('go-path', goEnvJson['GOPATH']);
             core.setOutput('go-root', goEnvJson['GOROOT']);
             core.setOutput('go-cache', goEnvJson['GOCACHE']);
             core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
-            core.startGroup('go env');
             core.setOutput('go-env', goEnvJson);
+            core.info(goVersion);
             core.info(goEnv);
+            core.info(goEnvJson);
             core.endGroup();
         }
         catch (error) {
