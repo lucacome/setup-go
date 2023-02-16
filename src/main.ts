@@ -57,7 +57,9 @@ export async function run() {
     }
 
     let goPath = await io.which('go');
-    let goVersion = (cp.execSync(`${goPath} version`) || '').toString();
+    let goEnv = (cp.execSync(`${goPath} env`) || '').toString();
+    let goEnvJson = convertEnvStringToJson(goEnv);
+    let goVersion = goEnvJson['GOVERSION'];
 
     if (cache && isCacheFeatureAvailable()) {
       const packageManager = 'default';
@@ -76,17 +78,14 @@ export async function run() {
     // output the version actually being used
     core.info(goVersion);
 
-    core.setOutput('go-version', parseGoVersion(goVersion));
+    core.setOutput('go-version', parseGoVersion(goEnvJson['GOVERSION']));
+    core.setOutput('go-path', goEnvJson['GOPATH']);
+    core.setOutput('go-root', goEnvJson['GOROOT']);
+    core.setOutput('go-cache', goEnvJson['GOCACHE']);
+    core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
 
     core.startGroup('go env');
-    let goEnv = (cp.execSync(`${goPath} env`) || '').toString();
-
-    let goEnvJson = convertEnvStringToJson(goEnv);
-
-    core.info(JSON.stringify(goEnvJson, null, 2));
     core.setOutput('go-env', JSON.stringify(goEnvJson));
-
-    core.setOutput('go-version', parseGoVersion(goVersion));
     core.info(goEnv);
     core.endGroup();
   } catch (error) {
@@ -138,7 +137,7 @@ function convertEnvStringToJson(envString: string): {[key: string]: string} {
   const envObject: {[key: string]: string} = {};
 
   envArray.forEach(envVar => {
-    const [key, value] = envVar.split('=');
+    const [key, value] = envVar.split(/=(?=")/);
     envObject[key] = value?.replace(/"/g, '');
   });
 

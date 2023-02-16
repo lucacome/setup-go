@@ -63603,7 +63603,9 @@ function run() {
                 core.info(`Successfully set up Go version ${versionSpec}`);
             }
             let goPath = yield io.which('go');
-            let goVersion = (child_process_1.default.execSync(`${goPath} version`) || '').toString();
+            let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
+            let goEnvJson = convertEnvStringToJson(goEnv);
+            let goVersion = goEnvJson['GOVERSION'];
             if (cache && cache_utils_1.isCacheFeatureAvailable()) {
                 const packageManager = 'default';
                 const cacheDependencyPath = core.getInput('cache-dependency-path');
@@ -63614,13 +63616,13 @@ function run() {
             core.info(`##[add-matcher]${matchersPath}`);
             // output the version actually being used
             core.info(goVersion);
-            core.setOutput('go-version', parseGoVersion(goVersion));
+            core.setOutput('go-version', parseGoVersion(goEnvJson['GOVERSION']));
+            core.setOutput('go-path', goEnvJson['GOPATH']);
+            core.setOutput('go-root', goEnvJson['GOROOT']);
+            core.setOutput('go-cache', goEnvJson['GOCACHE']);
+            core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
             core.startGroup('go env');
-            let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
-            let goEnvJson = convertEnvStringToJson(goEnv);
-            core.info(JSON.stringify(goEnvJson, null, 2));
             core.setOutput('go-env', JSON.stringify(goEnvJson));
-            core.setOutput('go-version', parseGoVersion(goVersion));
             core.info(goEnv);
             core.endGroup();
         }
@@ -63672,7 +63674,7 @@ function convertEnvStringToJson(envString) {
     const envArray = envString.split('\n');
     const envObject = {};
     envArray.forEach(envVar => {
-        const [key, value] = envVar.split('=');
+        const [key, value] = envVar.split(/=(?=")/);
         envObject[key] = value === null || value === void 0 ? void 0 : value.replace(/"/g, '');
     });
     return envObject;
