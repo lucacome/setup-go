@@ -15,4 +15,4 @@ jobs:
         uses: ./
       - run: |
           foo=${{ steps.setup-go.outputs.go-env }}
-          jq -r . <<<$foo
+          echo $foo | jq -r .GOPATH
