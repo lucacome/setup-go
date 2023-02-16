@@ -20,5 +20,3 @@ jobs:
           echo GOMODCACHE=${{ steps.setup-go.outputs.go-mod-cache }}
           echo GOVERSION=${{ steps.setup-go.outputs.go-version }}
           echo Cache hit: ${{ steps.setup-go.outputs.cache-hit }}
-
-          # echo ${{ fromJSON(steps.setup-go.outputs.go-env) }}
