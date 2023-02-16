@@ -60,6 +60,7 @@ export async function run() {
     let goEnv = (cp.execSync(`${goPath} env`) || '').toString();
     let goEnvJson = JSON.parse(convertEnvStringToJson(goEnv));
     let goVersion = goEnvJson['GOVERSION'].replace('go', '');
+    core.info(goVersion);
 
     if (cache && isCacheFeatureAvailable()) {
       const packageManager = 'default';
@@ -71,18 +72,17 @@ export async function run() {
     const matchersPath = path.join(__dirname, '../..', 'matchers.json');
     core.info(`##[add-matcher]${matchersPath}`);
 
-    core.startGroup('go env');
-
     core.setOutput('go-version', goVersion);
     core.setOutput('go-path', goEnvJson['GOPATH']);
     core.setOutput('go-root', goEnvJson['GOROOT']);
     core.setOutput('go-cache', goEnvJson['GOCACHE']);
     core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
     core.setOutput('go-env', goEnvJson);
-    core.info(goVersion);
+
+    core.startGroup('go env');
     core.info(goEnv);
-    core.info(goEnvJson);
     core.endGroup();
+    core.info(JSON.stringify(goEnvJson, null, 2));
   } catch (error) {
     core.setFailed(error.message);
   }

@@ -63606,6 +63606,7 @@ function run() {
             let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
             let goEnvJson = JSON.parse(convertEnvStringToJson(goEnv));
             let goVersion = goEnvJson['GOVERSION'].replace('go', '');
+            core.info(goVersion);
             if (cache && cache_utils_1.isCacheFeatureAvailable()) {
                 const packageManager = 'default';
                 const cacheDependencyPath = core.getInput('cache-dependency-path');
@@ -63614,17 +63615,16 @@ function run() {
             // add problem matchers
             const matchersPath = path_1.default.join(__dirname, '../..', 'matchers.json');
             core.info(`##[add-matcher]${matchersPath}`);
-            core.startGroup('go env');
             core.setOutput('go-version', goVersion);
             core.setOutput('go-path', goEnvJson['GOPATH']);
             core.setOutput('go-root', goEnvJson['GOROOT']);
             core.setOutput('go-cache', goEnvJson['GOCACHE']);
             core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
             core.setOutput('go-env', goEnvJson);
-            core.info(goVersion);
+            core.startGroup('go env');
             core.info(goEnv);
-            core.info(goEnvJson);
             core.endGroup();
+            core.info(JSON.stringify(goEnvJson, null, 2));
         }
         catch (error) {
             core.setFailed(error.message);
