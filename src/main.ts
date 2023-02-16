@@ -84,7 +84,7 @@ export async function run() {
     let goEnvJson = convertEnvStringToJson(goEnv);
 
     core.info(JSON.stringify(goEnvJson, null, 2));
-    core.setOutput('go-env', JSON.stringify(goEnvJson, null, 2));
+    core.setOutput('go-env', JSON.stringify(goEnvJson));
 
     core.setOutput('go-version', parseGoVersion(goVersion));
     core.info(goEnv);
