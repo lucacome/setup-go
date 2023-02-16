@@ -63674,9 +63674,8 @@ function convertEnvStringToJson(envString) {
     const envArray = envString.split('\n');
     const envObject = {};
     envArray.forEach(envVar => {
-        const [keyValueStr, ...valueStrParts] = envVar.split(/=(?=")/);
-        const value = valueStrParts.join('=').replace(/^"(.+(?="$))"$/, '$1');
-        envObject[keyValueStr] = value;
+        const [key, value] = envVar.split(/=(?=")/);
+        envObject[key] = value === null || value === void 0 ? void 0 : value.replace(/"/g, '');
     });
     return envObject;
 }
