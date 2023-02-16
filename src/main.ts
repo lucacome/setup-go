@@ -139,7 +139,7 @@ function convertEnvStringToJson(envString: string): {[key: string]: string} {
 
   envArray.forEach(envVar => {
     const [key, value] = envVar.split('=');
-    envObject[key] = value;
+    envObject[key] = value.replace(/"/g, '');
   });
 
   return envObject;
