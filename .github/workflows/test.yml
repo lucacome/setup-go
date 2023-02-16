@@ -14,4 +14,4 @@ jobs:
         id: setup-go
         uses: ./
       - run: |
-          echo ${{ steps.setup-go.outputs.go-env }} | jq -r .GOPATH
+          jq -r .GOPATH ${{ steps.setup-go.outputs.go-env }}
