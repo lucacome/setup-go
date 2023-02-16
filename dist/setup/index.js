@@ -63559,7 +63559,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseGoVersion = exports.addBinToPath = exports.run = void 0;
+exports.convertEnvStringToJson = exports.addBinToPath = exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const io = __importStar(__nccwpck_require__(7436));
 const installer = __importStar(__nccwpck_require__(2574));
@@ -63604,25 +63604,25 @@ function run() {
             }
             let goPath = yield io.which('go');
             let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
-            let goEnvJson = convertEnvStringToJson(goEnv);
-            let goVersion = goEnvJson['GOVERSION'];
+            let goEnvJson = JSON.parse(convertEnvStringToJson(goEnv));
+            let goVersion = goEnvJson['GOVERSION'].replace('go', '');
             if (cache && cache_utils_1.isCacheFeatureAvailable()) {
                 const packageManager = 'default';
                 const cacheDependencyPath = core.getInput('cache-dependency-path');
-                yield cache_restore_1.restoreCache(parseGoVersion(goVersion), packageManager, cacheDependencyPath);
+                yield cache_restore_1.restoreCache(goVersion, packageManager, cacheDependencyPath);
             }
             // add problem matchers
             const matchersPath = path_1.default.join(__dirname, '../..', 'matchers.json');
             core.info(`##[add-matcher]${matchersPath}`);
             // output the version actually being used
             core.info(goVersion);
-            core.setOutput('go-version', parseGoVersion(goEnvJson['GOVERSION']));
+            core.setOutput('go-version', goVersion);
             core.setOutput('go-path', goEnvJson['GOPATH']);
             core.setOutput('go-root', goEnvJson['GOROOT']);
             core.setOutput('go-cache', goEnvJson['GOCACHE']);
             core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
             core.startGroup('go env');
-            core.setOutput('go-env', JSON.stringify(goEnvJson));
+            core.setOutput('go-env', goEnvJson);
             core.info(goEnv);
             core.endGroup();
         }
@@ -63662,14 +63662,6 @@ function addBinToPath() {
     });
 }
 exports.addBinToPath = addBinToPath;
-function parseGoVersion(versionString) {
-    // get the installed version as an Action output
-    // based on go/src/cmd/go/internal/version/version.go:
-    // fmt.Printf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
-    // expecting go<version> for runtime.Version()
-    return versionString.split(' ')[2].slice('go'.length);
-}
-exports.parseGoVersion = parseGoVersion;
 function convertEnvStringToJson(envString) {
     const envArray = envString.split('\n');
     const envObject = {};
@@ -63677,8 +63669,9 @@ function convertEnvStringToJson(envString) {
         const [key, value] = envVar.split(/=(?=")/);
         envObject[key] = value === null || value === void 0 ? void 0 : value.replace(/"/g, '');
     });
-    return envObject;
+    return JSON.stringify(envObject);
 }
+exports.convertEnvStringToJson = convertEnvStringToJson;
 function resolveVersionInput() {
     let version = core.getInput('go-version');
     const versionFilePath = core.getInput('go-version-file');

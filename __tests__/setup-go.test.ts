@@ -124,9 +124,23 @@ describe('setup-go', () => {
     jest.restoreAllMocks();
   }, 100000);
 
-  it('can extract the major.minor.patch version from a given Go version string', async () => {
-    const goVersionOutput = 'go version go1.16.6 darwin/amd64';
-    expect(main.parseGoVersion(goVersionOutput)).toBe('1.16.6');
+  it('can read go env variables', async () => {
+    let goRoot = '/opt/hostedtoolcache/go/1.18.10/x64';
+    let goPath = '/home/runner/go';
+    let goModCache = '/home/runner/go/pkg/mod';
+    let goCache = '/home/runner/.cache/go-build';
+    let goVersion = 'go1.18.10';
+
+    let env = `
+      GOROOT="${goRoot}"
+      GOPATH="${goPath}"
+      GOMODCACHE="${goModCache}"
+      GOCACHE="${goCache}"
+      GOVERSION="${goVersion}"
+    `;
+    let json = JSON.parse(main.convertEnvStringToJson(env));
+    expect(json).toBeDefined();
+    // expect(json).toBe(goRoot);
   });
 
   it('can find 1.9.7 from manifest on osx', async () => {

@@ -58,17 +58,13 @@ export async function run() {
 
     let goPath = await io.which('go');
     let goEnv = (cp.execSync(`${goPath} env`) || '').toString();
-    let goEnvJson = convertEnvStringToJson(goEnv);
-    let goVersion = goEnvJson['GOVERSION'];
+    let goEnvJson = JSON.parse(convertEnvStringToJson(goEnv));
+    let goVersion = goEnvJson['GOVERSION'].replace('go', '');
 
     if (cache && isCacheFeatureAvailable()) {
       const packageManager = 'default';
       const cacheDependencyPath = core.getInput('cache-dependency-path');
-      await restoreCache(
-        parseGoVersion(goVersion),
-        packageManager,
-        cacheDependencyPath
-      );
+      await restoreCache(goVersion, packageManager, cacheDependencyPath);
     }
 
     // add problem matchers
@@ -78,14 +74,14 @@ export async function run() {
     // output the version actually being used
     core.info(goVersion);
 
-    core.setOutput('go-version', parseGoVersion(goEnvJson['GOVERSION']));
+    core.setOutput('go-version', goVersion);
     core.setOutput('go-path', goEnvJson['GOPATH']);
     core.setOutput('go-root', goEnvJson['GOROOT']);
     core.setOutput('go-cache', goEnvJson['GOCACHE']);
     core.setOutput('go-mod-cache', goEnvJson['GOMODCACHE']);
 
     core.startGroup('go env');
-    core.setOutput('go-env', JSON.stringify(goEnvJson));
+    core.setOutput('go-env', goEnvJson);
     core.info(goEnv);
     core.endGroup();
   } catch (error) {
@@ -124,15 +120,7 @@ export async function addBinToPath(): Promise<boolean> {
   return added;
 }
 
-export function parseGoVersion(versionString: string): string {
-  // get the installed version as an Action output
-  // based on go/src/cmd/go/internal/version/version.go:
-  // fmt.Printf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
-  // expecting go<version> for runtime.Version()
-  return versionString.split(' ')[2].slice('go'.length);
-}
-
-function convertEnvStringToJson(envString: string): {[key: string]: string} {
+export function convertEnvStringToJson(envString: string): string {
   const envArray = envString.split('\n');
   const envObject: {[key: string]: string} = {};
 
@@ -141,7 +129,7 @@ function convertEnvStringToJson(envString: string): {[key: string]: string} {
     envObject[key] = value?.replace(/"/g, '');
   });
 
-  return envObject;
+  return JSON.stringify(envObject);
 }
 
 function resolveVersionInput(): string {
