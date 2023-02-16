@@ -15,3 +15,9 @@ jobs:
         uses: ./
       - run: |
           echo ${{ steps.setup-go.outputs.go-path }}
+          echo ${{ steps.setup-go.outputs.go-root }}
+          echo ${{ steps.setup-go.outputs.go-mod }}
+          echo ${{ steps.setup-go.outputs.go-mod-cache }}
+          echo ${{ steps.setup-go.outputs.go-env }}
+          echo ${{ steps.setup-go.outputs.cache-hit }}
+          echo ${{ steps.setup-go.outputs.go-version }}
