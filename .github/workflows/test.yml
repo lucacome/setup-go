@@ -21,4 +21,4 @@ jobs:
           echo GOVERSION=${{ steps.setup-go.outputs.go-version }}
           echo Cache hit: ${{ steps.setup-go.outputs.cache-hit }}
 
-          jq . <<< ${{ fromJSON(steps.setup-go.outputs.go-env) }}
+          jq . <<< ${{ steps.setup-go.outputs.go-env }}
